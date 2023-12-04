@@ -5,9 +5,14 @@ const port = 3000
 const db = require('./db')
 
 app.get('/', async (req,res) =>{
-    const ids = await db('people').insert({name: 'FullCycle User ' + Math.floor(Math.random() * 99)})
-    const people = await db.select().from('people')
-    res.send("<h1>Full Cycle Rocks!</h1>" + toTable(people))
+    try{
+        await db('people').insert({name: 'FullCycle User ' + Math.floor(Math.random() * 99)})
+        const people = await db.select().from('people')
+        res.send("<h1>Full Cycle Rocks!</h1>" + toTable(people))
+    } catch (e){
+        res.send("<h1>Não foi possível conectar no banco de dados</h1>")
+        console.log("Não foi possivel conectar no banco de dados", e.message)
+    }
 })
 
 app.listen(port, () => {
