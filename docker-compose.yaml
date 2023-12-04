@@ -1,0 +1,51 @@
+version: '3'
+
+services: 
+
+  proxy-reverso:
+      container_name: nginx
+      build: ./nginx
+      ports: 
+        - "8080:80"
+      volumes: 
+        - ./nginx:/etc/nginx/conf.d
+      depends_on: 
+        - mysql
+        - node-js
+      networks: 
+        - fullcycle-network
+
+  node-js:
+      build: ./node/
+      container_name: node-js
+      working_dir: /usr/src/app
+      networks: 
+        - fullcycle-network
+      tty: true
+      environment:
+         DB_HOST: db-mysql
+         DB_USER: root
+         DB_PWD: root
+         DB_DB: nodedb
+      ports: 
+        - "3000:3000"
+      depends_on: 
+        - mysql 
+
+  mysql:
+      image: mysql:5.7
+      command: --innodb-use-native-aio=0
+      container_name: db-mysql
+      restart: always
+      tty: true
+      volumes: 
+        - ./mysql/database_schema_dump.sql:/docker-entrypoint-initdb.d/datadump.sql  
+      environment: 
+        - MYSQL_DATABASE=nodedb
+        - MYSQL_ROOT_PASSWORD=root
+      networks: 
+        - fullcycle-network
+
+networks: 
+  fullcycle-network:
+     driver: bridge   
