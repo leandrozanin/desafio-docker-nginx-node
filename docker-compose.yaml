@@ -24,6 +24,7 @@ services:
       tty: true
       volumes: 
         - ./node/project:/usr/src/app
+      entrypoint: sh -c "npm install && node index.js"
       environment:
          DB_HOST: db-mysql
          DB_USER: root
