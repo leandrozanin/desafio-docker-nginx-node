@@ -10,7 +10,7 @@ services:
       volumes: 
         - ./nginx:/etc/nginx/conf.d
       depends_on: 
-        - mysql
+        - db-mysql
         - node-js
       networks: 
         - fullcycle-network
@@ -30,9 +30,10 @@ services:
       ports: 
         - "3000:3000"
       depends_on: 
-        - mysql 
+          db-mysql:
+            condition: service_healthy 
 
-  mysql:
+  db-mysql:
       image: mysql:5.7
       command: --innodb-use-native-aio=0
       container_name: db-mysql
@@ -43,6 +44,11 @@ services:
       environment: 
         - MYSQL_DATABASE=nodedb
         - MYSQL_ROOT_PASSWORD=root
+      healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=root"]
+        interval: 5s
+        timeout: 10s
+        retries: 3
       networks: 
         - fullcycle-network
 
