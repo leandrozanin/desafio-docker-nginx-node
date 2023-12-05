@@ -22,6 +22,8 @@ services:
       networks: 
         - fullcycle-network
       tty: true
+      volumes: 
+        - ./node/project:/usr/src/app
       environment:
          DB_HOST: db-mysql
          DB_USER: root
